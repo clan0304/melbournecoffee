@@ -109,5 +109,5 @@ async function getEmbeddingForList(
   mycomment: string,
   description: string | undefined
 ) {
-  return getEmbedding(mycomment + '\n\n' + description ?? '');
+  return getEmbedding(mycomment + '\n\n' + (description ?? ''));
 }
