@@ -21,7 +21,7 @@ export const CafeSearch = () => {
   const [cafes, setCafes] = useState<Cafe[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -30,7 +30,7 @@ export const CafeSearch = () => {
     }
   }, [cafes]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
@@ -60,7 +60,6 @@ export const CafeSearch = () => {
         return;
       }
 
-      console.log(data);
       setCafes(data);
     } catch (error) {
       setError(`${error} Something went wrong. Please try again.`);
@@ -86,7 +85,7 @@ export const CafeSearch = () => {
         >
           <FaTrash />
         </button>
-        <input
+        <textarea
           value={input}
           onChange={handleInputChange}
           placeholder="Search cafes..."
@@ -105,10 +104,12 @@ export const CafeSearch = () => {
       {hasSearched && (
         <div
           ref={scrollRef}
-          className="space-y-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 "
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 auto-rows-fr"
         >
           {cafes.map((cafe) => (
-            <CafeCard key={cafe.listId} cafe={cafe} />
+            <div key={cafe.listId} className="h-full">
+              <CafeCard cafe={cafe} />
+            </div>
           ))}
 
           {isLoading && (
@@ -122,7 +123,7 @@ export const CafeSearch = () => {
           )}
 
           {!error && cafes.length === 0 && !isLoading && (
-            <div className="flex h-full items-center justify-center gap-3 text-gray-500">
+            <div className="col-span-full flex items-center justify-center gap-3 text-gray-500">
               No cafes found. Try another search.
             </div>
           )}
@@ -139,12 +140,34 @@ export const CafeSearch = () => {
 };
 
 const CafeCard = ({ cafe }: { cafe: Cafe }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
   return (
-    <div className="bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg">
-      <div className="p-6">
-        <h3 className="text-xl font-bold text-gray-800 mb-2">{cafe.name}</h3>
-        <p className="text-gray-600 mb-4">{cafe.description}</p>
-        <div className="flex items-center justify-between">
+    <div
+      className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col ${
+        isExpanded ? 'h-auto' : 'h-64'
+      }`}
+    >
+      <div className="p-6 flex flex-col h-full">
+        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">
+          {cafe.name}
+        </h3>
+        <div className="flex flex-col flex-grow">
+          <p
+            className={`text-gray-600 mb-2 ${isExpanded ? '' : 'line-clamp-3'}`}
+          >
+            {cafe.description}
+          </p>
+          {cafe.description.split(' ').length > 20 && (
+            <button
+              onClick={() => setIsExpanded(!isExpanded)}
+              className="text-blue-500 hover:text-blue-700 text-sm font-medium mb-2"
+            >
+              {isExpanded ? 'Show Less' : 'Show More'}
+            </button>
+          )}
+        </div>
+        <div className="flex items-center justify-between mt-auto pt-4">
           <Link
             href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
               cafe.name
@@ -156,11 +179,14 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
             </button>
           </Link>
           {cafe.instagram && (
-            <Link
-              href={cafe.instagram}
-              className="text-gray-500 hover:text-pink-500 transition-colors duration-300"
-            >
-              <Image src={Instagram} alt="Instagram" width={20} height={20} />
+            <Link href={cafe.instagram}>
+              <Image
+                src={Instagram}
+                alt="Instagram"
+                width={40}
+                height={40}
+                className="w-10 h-10"
+              />
             </Link>
           )}
         </div>
@@ -168,5 +194,4 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
     </div>
   );
 };
-
 export default CafeSearch;

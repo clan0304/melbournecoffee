@@ -40,6 +40,7 @@ export async function POST(req: Request) {
         listId: cafe.listId,
         name: cafe.name,
         description: cafe.description,
+        instagram: cafe.instagram,
         relevanceScore: vectorMatch?.score || 0,
       };
     });
