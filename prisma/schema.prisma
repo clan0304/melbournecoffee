@@ -23,5 +23,6 @@ model Cafe {
   address String
   mycomment String?
   instagram String?
+  keywords String[]
 
 }

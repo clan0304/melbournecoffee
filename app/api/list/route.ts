@@ -57,7 +57,7 @@ export const DELETE = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
   const body = await req.json();
-  const { listId, description, mycomment, instagram } = body;
+  const { listId, description, mycomment, instagram, address, keywords } = body;
 
   if (!listId) {
     return NextResponse.json({ error: 'Id is undefined' }, { status: 400 });
@@ -65,7 +65,12 @@ export const PUT = async (req: Request) => {
 
   try {
     // First get the embedding
-    const embedding = await getEmbeddingForList(mycomment, description);
+    const embedding = await getEmbeddingForList(
+      mycomment,
+      description,
+      address,
+      keywords
+    );
 
     // Update MongoDB first
     const updatedList = await prisma.cafe.update({
@@ -76,6 +81,7 @@ export const PUT = async (req: Request) => {
         description,
         mycomment,
         instagram,
+        keywords,
       },
     });
 
@@ -107,7 +113,17 @@ export const PUT = async (req: Request) => {
 
 async function getEmbeddingForList(
   mycomment: string,
-  description: string | undefined
+  description: string | undefined,
+  address: string,
+  keywords: string
 ) {
-  return getEmbedding(mycomment + '\n\n' + (description ?? ''));
+  return getEmbedding(
+    mycomment +
+      '\n\n' +
+      address +
+      `\n\n` +
+      keywords +
+      '\n\n' +
+      (description ?? '')
+  );
 }

@@ -12,13 +12,18 @@ export async function POST(req: Request) {
     // Get the last user message as search query
     const searchQuery = messages[messages.length - 1].content;
 
+    const match = searchQuery?.match(/\b(\d+)\b/); // Extract numbers from the query
+    let numberOfResults = match ? parseInt(match[1], 10) : 6;
+
+    // Enforce a maximum of 10 results
+    numberOfResults = Math.min(numberOfResults, 10);
     // Generate embedding for the search query
     const embedding = await getEmbedding(searchQuery!);
 
     // Query vector database
     const vectorQueryResponse = await notesIndex.query({
       vector: embedding,
-      topK: 4,
+      topK: numberOfResults,
     });
 
     // Fetch matching cafes from database
