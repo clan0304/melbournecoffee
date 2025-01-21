@@ -44,9 +44,10 @@ export async function POST(req: Request) {
       return {
         listId: cafe.listId,
         name: cafe.name,
-        description: cafe.description,
         instagram: cafe.instagram,
         relevanceScore: vectorMatch?.score || 0,
+        keywords: cafe.keywords,
+        address: cafe.address,
       };
     });
 

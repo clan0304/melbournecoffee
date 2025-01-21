@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { FaTrash } from 'react-icons/fa';
-import Instagram from '@/public/assets/instagram.png';
-import Image from 'next/image';
+import { Trash2, Instagram, ExternalLink, MapPin, Coffee } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
 
 type Cafe = {
   listId: string;
@@ -12,6 +13,8 @@ type Cafe = {
   description: string;
   relevanceScore: number;
   instagram: string;
+  keywords: string[];
+  address: string;
 };
 
 export const CafeSearch = () => {
@@ -76,122 +79,153 @@ export const CafeSearch = () => {
   };
 
   return (
-    <div className="flex flex-col gap-3 pt-20 px-10">
-      <form onSubmit={handleSubmit} className="flex gap-2">
-        <button
-          type="button"
-          onClick={clearResults}
-          className="p-2 text-gray-500 hover:text-gray-700"
-        >
-          <FaTrash />
-        </button>
-        <textarea
-          value={input}
-          onChange={handleInputChange}
-          placeholder="Search cafes..."
-          ref={inputRef}
-          className="flex-1 p-2 border rounded"
-        />
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          disabled={isLoading}
-        >
-          Search
-        </button>
-      </form>
+    <div className="min-h-screen bg-gradient-to-b to-slate-950 from-slate-900 text-white">
+      <div className="container mx-auto px-4 py-20">
+        <h1 className="text-5xl font-bold text-center mb-4">
+          Find Your Perfect Cafe
+        </h1>
+        <p className="text-zinc-400 text-center text-xl mb-12">
+          Discover, explore, and navigate to the best cafes near you.
+        </p>
 
-      {hasSearched && (
-        <div
-          ref={scrollRef}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5 auto-rows-fr"
-        >
-          {cafes.map((cafe) => (
-            <div key={cafe.listId} className="h-full">
-              <CafeCard cafe={cafe} />
-            </div>
-          ))}
-
-          {isLoading && (
-            <div className="p-4 bg-gray-100 rounded">
-              Searching for cafes...
-            </div>
-          )}
-
-          {error && (
-            <div className="p-4 bg-red-100 text-red-700 rounded">{error}</div>
-          )}
-
-          {!error && cafes.length === 0 && !isLoading && (
-            <div className="col-span-full flex items-center justify-center gap-3 text-gray-500">
-              No cafes found. Try another search.
-            </div>
-          )}
-        </div>
-      )}
-
-      {!hasSearched && (
-        <div className="flex h-full items-center justify-center gap-3 text-gray-500">
-          Search for cafes using AI...
-        </div>
-      )}
-    </div>
-  );
-};
-
-const CafeCard = ({ cafe }: { cafe: Cafe }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-
-  return (
-    <div
-      className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-300 hover:shadow-lg flex flex-col ${
-        isExpanded ? 'h-auto' : 'h-64'
-      }`}
-    >
-      <div className="p-6 flex flex-col h-full">
-        <h3 className="text-xl font-bold text-gray-800 mb-2 line-clamp-1">
-          {cafe.name}
-        </h3>
-        <div className="flex flex-col flex-grow">
-          <p
-            className={`text-gray-600 mb-2 ${isExpanded ? '' : 'line-clamp-3'}`}
-          >
-            {cafe.description}
-          </p>
-          {cafe.description.split(' ').length > 20 && (
-            <button
-              onClick={() => setIsExpanded(!isExpanded)}
-              className="text-blue-500 hover:text-blue-700 text-sm font-medium mb-2"
-            >
-              {isExpanded ? 'Show Less' : 'Show More'}
-            </button>
-          )}
-        </div>
-        <div className="flex items-center justify-between mt-auto pt-4">
-          <Link
-            href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-              cafe.name
-            )}`}
-            className="inline-block"
-          >
-            <button className="bg-black text-white font-semibold px-4 py-2 rounded-full transition-colors duration-300 hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-opacity-50">
-              Find Direction
-            </button>
-          </Link>
-          {cafe.instagram && (
-            <Link href={cafe.instagram}>
-              <Image
-                src={Instagram}
-                alt="Instagram"
-                width={40}
-                height={40}
-                className="w-10 h-10"
+        <div className="max-w-3xl mx-auto">
+          <form onSubmit={handleSubmit} className="relative mb-12">
+            <div className="relative items-center flex gap-2 p-1 bg-zinc-800/70 rounded-lg backdrop-blur-sm">
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                onClick={clearResults}
+                className="text-zinc-400 hover:text-zinc-100"
+              >
+                <Trash2 className="h-5 w-5" color="white" />
+              </Button>
+              <Textarea
+                value={input}
+                onChange={handleInputChange}
+                placeholder="How can we help you find a cafe today?"
+                ref={inputRef}
+                className="flex-1 bg-transparent border-0 focus-visible:ring-0 text-zinc-100 placeholder:text-zinc-500 resize-none"
+                rows={1}
               />
-            </Link>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="bg-white hover:opacity-70 text-slate-900 font-bold"
+              >
+                Search
+              </Button>
+            </div>
+          </form>
+
+          {hasSearched && (
+            <div
+              ref={scrollRef}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+            >
+              {cafes.map((cafe) => (
+                <CafeCard key={cafe.listId} cafe={cafe} />
+              ))}
+
+              {isLoading && (
+                <Card className="col-span-full bg-zinc-800/50 border-zinc-700">
+                  <CardContent className="p-6 text-center text-zinc-400">
+                    Searching for cafes...
+                  </CardContent>
+                </Card>
+              )}
+
+              {error && (
+                <Card className="col-span-full bg-red-900/20 border-red-800">
+                  <CardContent className="p-6 text-center text-red-400">
+                    {error}
+                  </CardContent>
+                </Card>
+              )}
+
+              {!error && cafes.length === 0 && !isLoading && (
+                <div className="col-span-full text-center text-zinc-400">
+                  No cafes found. Try another search.
+                </div>
+              )}
+            </div>
           )}
         </div>
       </div>
     </div>
   );
 };
+
+const CafeCard = ({ cafe }: { cafe: Cafe }) => {
+  return (
+    <Card className="bg-zinc-800/50 border-zinc-700 backdrop-blur-sm transition-all">
+      <CardContent className="p-6">
+        <div className="flex items-center mb-4">
+          <Coffee className="h-6 w-6 text-zinc-400 mr-3" />
+          <h3 className="text-2xl font-bold text-zinc-100 line-clamp-1">
+            {cafe.name}
+          </h3>
+        </div>
+
+        <div className="mb-6 min-h-[100px]">
+          <div className="flex flex-wrap gap-2">
+            {cafe.keywords.map((keyword, index) => (
+              <p
+                key={index}
+                className="bg-white text-zinc-700 px-5 py-1 rounded-full"
+              >
+                {keyword}
+              </p>
+            ))}
+          </div>
+        </div>
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-700">
+          <Link
+            href={`https://www.google.com/maps/dir/?api=1&destination=${cafe.address}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="secondary" className="gap-2">
+              <MapPin className="h-4 w-4" />
+              Directions
+            </Button>
+          </Link>
+          <div className="flex gap-2">
+            {cafe.instagram && (
+              <Link
+                href={cafe.instagram}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/20"
+                >
+                  <Instagram className="h-5 w-5" />
+                </Button>
+              </Link>
+            )}
+            <Link
+              href={`https://www.google.com/search?q=${encodeURIComponent(
+                cafe.name
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Button
+                variant="ghost"
+                size="icon"
+                className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700"
+              >
+                <ExternalLink className="h-5 w-5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 export default CafeSearch;
