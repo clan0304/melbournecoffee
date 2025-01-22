@@ -39,6 +39,7 @@ export const CafeSearch = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!input.trim()) return;
 
     setIsLoading(true);
@@ -108,6 +109,7 @@ export const CafeSearch = () => {
                 className="flex-1 bg-transparent border-0 focus-visible:ring-0 text-zinc-100 placeholder:text-zinc-500 resize-none"
                 rows={1}
               />
+
               <Button
                 type="submit"
                 disabled={isLoading}
