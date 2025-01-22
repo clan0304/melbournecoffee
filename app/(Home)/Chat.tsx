@@ -103,7 +103,7 @@ export const CafeSearch = () => {
               <Textarea
                 value={input}
                 onChange={handleInputChange}
-                placeholder="How can we help you find a cafe today?"
+                placeholder="I will recommend you the best cafe for you!"
                 ref={inputRef}
                 className="flex-1 bg-transparent border-0 focus-visible:ring-0 text-zinc-100 placeholder:text-zinc-500 resize-none"
                 rows={1}

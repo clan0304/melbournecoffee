@@ -7,10 +7,14 @@ import SearchBar from './SearchBar';
 import ListContainer from './ListContainer';
 import Link from 'next/link';
 import { Cafe } from '@prisma/client';
+import { useUserContext } from '@/provider/UserProvider';
 
 export default function AdminPage() {
   const [googleLists, setGoogleLists] = useState<any[]>([]);
   const [cafeList, setCafeList] = useState<Cafe[]>([]);
+  const { user } = useUserContext();
+  const adminEmail =
+    user?.primaryEmailAddress?.emailAddress === 'clan0304@gmail.com';
 
   useEffect(() => {
     getGoogleLists('Cafe in Melbourne');
@@ -29,6 +33,10 @@ export default function AdminPage() {
 
     getCafeList();
   }, []);
+
+  if (!adminEmail) {
+    return <>You are not authorized!</>;
+  }
 
   return (
     <section className="flex flex-col w-full h-full">
