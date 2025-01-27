@@ -6,6 +6,7 @@ import { Trash2, Instagram, ExternalLink, MapPin, Coffee } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { v4 as uuidv4 } from 'uuid';
 
 type Cafe = {
   listId: string;
@@ -17,15 +18,27 @@ type Cafe = {
   address: string;
 };
 
+type Message = {
+  role: 'user';
+  content: string;
+};
+
 export const CafeSearch = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cafes, setCafes] = useState<Cafe[]>([]);
   const [hasSearched, setHasSearched] = useState(false);
+  const [sessionId, setSessionId] = useState<string>('');
+  const [messages, setMessages] = useState<Message[]>([]);
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+
+  // Initialize session ID on component mount
+  useEffect(() => {
+    setSessionId(uuidv4());
+  }, []);
 
   useEffect(() => {
     if (scrollRef.current) {
@@ -46,6 +59,9 @@ export const CafeSearch = () => {
     setError(null);
     setHasSearched(true);
 
+    const newMessage = { role: 'user' as const, content: input };
+    const updatedMessages = [...messages, newMessage];
+
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
@@ -53,7 +69,8 @@ export const CafeSearch = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          messages: [{ role: 'user', content: input }],
+          messages: updatedMessages,
+          sessionId: sessionId,
         }),
       });
 
@@ -64,7 +81,48 @@ export const CafeSearch = () => {
         return;
       }
 
-      setCafes(data);
+      setCafes(data.results || data);
+      setMessages(updatedMessages);
+    } catch (error) {
+      setError(`${error} Something went wrong. Please try again.`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleLoadMore = async () => {
+    if (!messages.length) return;
+
+    setIsLoading(true);
+    setError(null);
+
+    const loadMoreMessage = {
+      role: 'user' as const,
+      content: 'Can you show me more options?',
+    };
+    const updatedMessages = [...messages, loadMoreMessage];
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          messages: updatedMessages,
+          sessionId: sessionId,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        setError(data.error);
+        return;
+      }
+
+      setCafes((prevCafes) => [...prevCafes, ...(data.results || data)]);
+      setMessages(updatedMessages);
     } catch (error) {
       setError(`${error} Something went wrong. Please try again.`);
     } finally {
@@ -77,6 +135,7 @@ export const CafeSearch = () => {
     setInput('');
     setError(null);
     setHasSearched(false);
+    setMessages([]);
   };
 
   return (
@@ -129,7 +188,7 @@ export const CafeSearch = () => {
               className="grid grid-cols-1 md:grid-cols-2 gap-6"
             >
               {cafes.map((cafe) => (
-                <CafeCard key={cafe.listId} cafe={cafe} />
+                <CafeCard key={`${cafe.listId}-${cafe.name}`} cafe={cafe} />
               ))}
 
               {isLoading && (
@@ -146,6 +205,18 @@ export const CafeSearch = () => {
                     {error}
                   </CardContent>
                 </Card>
+              )}
+
+              {!error && cafes.length > 0 && !isLoading && (
+                <div className="col-span-full text-center">
+                  <Button
+                    onClick={handleLoadMore}
+                    variant="outline"
+                    className="mt-4"
+                  >
+                    Load More Cafes
+                  </Button>
+                </div>
               )}
 
               {!error && cafes.length === 0 && !isLoading && (
