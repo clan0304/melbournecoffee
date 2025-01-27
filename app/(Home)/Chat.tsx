@@ -82,13 +82,13 @@ export const CafeSearch = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b to-slate-950 from-slate-900 text-white">
       <div className="container mx-auto px-4 py-20">
-        <h1 className="text-5xl font-bold text-center mb-4">
+        <h1 className="text-4xl sm:text-5xl font-bold text-center mb-4">
           Find Your Perfect Cafe
         </h1>
-        <p className="text-zinc-400 text-center text-xl">
+        <p className="text-zinc-400 text-center text-md sm:text-xl lg:text-2xl">
           Discover, explore, and navigate to the best cafes near you.
         </p>
-        <p className="text-zinc-300 text-center text-md mb-16">
+        <p className="text-zinc-300 text-center text-xs sm:text-md mb-16">
           (We currently provide cafes only in the Melbourne area.)
         </p>
 
