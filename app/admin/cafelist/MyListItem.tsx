@@ -2,7 +2,6 @@
 
 import { Cafe } from '@prisma/client';
 import axios from 'axios';
-import Image from 'next/image';
 import React, { useState } from 'react';
 import { FaMapMarkerAlt } from 'react-icons/fa';
 import MyListModal from './MyListModal';
@@ -26,22 +25,19 @@ const MyListItem = ({ cafeListItem }: MyListItemProps) => {
   };
   return (
     <div className="max-w-[400px] min-h-[400px] w-full h-full border-2 border-black flex flex-col rounded-lg">
-      <div className="self-center w-full h-1/2 relative aspect-[16/9] rounded-lg">
-        <Image
-          src={cafeListItem.img}
-          alt="List Image"
-          fill
-          objectFit="cover"
-          className="rounded-md"
-        />
-      </div>
       <div className="flex flex-col w-full h-1/2 pt-2">
-        <p className="font-anton text-xl min-h-[60px] pl-2">
-          {cafeListItem.name}
-        </p>
-        <p className="text-sm flex gap-2 px-2">
-          <FaMapMarkerAlt className="pt-1" /> {cafeListItem.address}
-        </p>
+        {cafeListItem.name && (
+          <p className="font-anton text-xl min-h-[60px] pl-2">
+            {cafeListItem.name}
+          </p>
+        )}
+
+        {cafeListItem.address && (
+          <p className="text-sm flex gap-2 px-2">
+            <FaMapMarkerAlt className="pt-1" /> {cafeListItem.address}
+          </p>
+        )}
+
         <div className="flex-grow"></div>
         <div>
           <button

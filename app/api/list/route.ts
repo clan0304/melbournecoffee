@@ -12,15 +12,13 @@ export const GET = async () => {
 export const POST = async (req: Request) => {
   const body = await req.json();
 
-  const { listId, name, address, img } = body;
+  const { listId } = body;
   try {
     const newList = await prisma.cafe.create({
       data: {
         listId,
-        name,
-        address,
-        img,
-
+        name: '',
+        address: '',
         instagram: '',
         mycomment: '',
         description: '',
@@ -57,7 +55,8 @@ export const DELETE = async (req: Request) => {
 
 export const PUT = async (req: Request) => {
   const body = await req.json();
-  const { listId, description, mycomment, instagram, address, keywords } = body;
+  const { listId, name, description, mycomment, instagram, address, keywords } =
+    body;
 
   if (!listId) {
     return NextResponse.json({ error: 'Id is undefined' }, { status: 400 });
@@ -78,6 +77,8 @@ export const PUT = async (req: Request) => {
         listId: listId,
       },
       data: {
+        name,
+        address,
         description,
         mycomment,
         instagram,

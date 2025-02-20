@@ -36,10 +36,6 @@ const ListItem = ({ item, cafeList }: any) => {
         request = async () =>
           await axios.post('/api/list', {
             listId: item.place_id,
-            name: item.name,
-
-            address: item.formatted_address,
-            img: imageUrl,
           });
       }
 
@@ -49,14 +45,7 @@ const ListItem = ({ item, cafeList }: any) => {
     } catch (error) {
       console.log(error);
     }
-  }, [
-    isSaved,
-    cafeList.id,
-    item.place_id,
-    item.name,
-    item.formatted_address,
-    imageUrl,
-  ]);
+  }, [isSaved, cafeList.id, item.place_id]);
 
   return (
     <div className="max-w-[400px] min-h-[400px] w-full h-full border-2 border-black flex flex-col rounded-lg">

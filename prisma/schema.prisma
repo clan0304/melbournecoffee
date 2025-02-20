@@ -17,10 +17,9 @@ datasource db {
 model Cafe {
   id      String   @id @default(auto()) @map("_id") @db.ObjectId
   listId String @unique
-  name String
+  name String?
   description String?
-  img String
-  address String
+  address String?
   mycomment String?
   instagram String?
   keywords String[]
