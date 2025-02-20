@@ -120,7 +120,7 @@ export async function POST(req: Request) {
 
       // Calculate name similarity score
       const nameSimilarityScore = getNameSimilarityScore(
-        cafe.name,
+        cafe.name!,
         searchQuery!
       );
 
