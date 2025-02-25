@@ -62,6 +62,9 @@ export const CafeSearch = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+
+    // Clear previous results immediately
+    setCafes([]);
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
@@ -148,24 +151,19 @@ export const CafeSearch = () => {
             )}
           </form>
 
-          {hasSearched && (
-            <div
-              ref={scrollRef}
-              className="grid grid-cols-1 md:grid-cols-2 gap-6"
-            >
-              {cafes.map((cafe) => (
-                <CafeCard key={`${cafe.listId}-${cafe.name}`} cafe={cafe} />
-              ))}
-
-              {error && (
+          {hasSearched && !isLoading && (
+            <div ref={scrollRef} className="grid grid-cols-1 ">
+              {cafes.length > 0 ? (
+                cafes.map((cafe) => (
+                  <CafeCard key={`${cafe.listId}-${cafe.name}`} cafe={cafe} />
+                ))
+              ) : error ? (
                 <Card className="col-span-full bg-red-100 border-red-200">
                   <CardContent className="p-6 text-center text-red-600">
                     {error}
                   </CardContent>
                 </Card>
-              )}
-
-              {!error && cafes.length === 0 && !isLoading && (
+              ) : (
                 <div className="col-span-full text-center text-gray-500">
                   No cafes found. Try another search.
                 </div>
@@ -184,7 +182,7 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
       <CardContent className="p-6">
         <div className="flex items-center mb-4">
           <Coffee className="h-6 w-6 text-gray-500 mr-3" />
-          <h3 className="text-2xl font-bold text-gray-800 line-clamp-1">
+          <h3 className="text-lg md:text-xl xl:text-2xl font-bold text-gray-800 line-clamp-1">
             {cafe.name}
           </h3>
         </div>
