@@ -106,10 +106,10 @@ export const CafeSearch = () => {
         <h1 className="text-3xl sm:text-5xl font-bold text-center mb-4">
           Find Your Perfect Cafe
         </h1>
-        <p className="text-gray-500 text-center text-md sm:text-xl lg:text-2xl">
+        <p className="text-gray-500 text-center text-sm sm:text-xl lg:text-2xl">
           Discover, explore, and navigate to the best cafes near you.
         </p>
-        <p className="text-red-500 text-center text-sm sm:text-md mb-16">
+        <p className="text-red-500 text-center text-[11px] sm:text-md mb-16">
           (We currently provide cafes only in the Melbourne area.)
         </p>
 
