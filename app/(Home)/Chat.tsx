@@ -2,11 +2,14 @@
 
 import Link from 'next/link';
 import { useState, useRef, useEffect } from 'react';
-import { Trash2, Instagram, ExternalLink, MapPin, Coffee } from 'lucide-react';
+import { Trash2, MapPin, Coffee } from 'lucide-react';
+import Instagram from '@/public/assets/instagram.png';
+import Google from '@/public/assets/google.png';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { v4 as uuidv4 } from 'uuid';
+import Image from 'next/image';
 
 type Cafe = {
   listId: string;
@@ -35,7 +38,6 @@ export const CafeSearch = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // Initialize session ID on component mount
   useEffect(() => {
     setSessionId(uuidv4());
   }, []);
@@ -46,15 +48,20 @@ export const CafeSearch = () => {
     }
   }, [cafes]);
 
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.style.height = 'auto'; // Reset height
+      inputRef.current.style.height = `${inputRef.current.scrollHeight}px`; // Adjust to content
+    }
+  }, [input]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!input.trim()) return;
-
     setIsLoading(true);
     setError(null);
     setHasSearched(true);
@@ -65,22 +72,14 @@ export const CafeSearch = () => {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          sessionId: sessionId,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updatedMessages, sessionId }),
       });
-
       const data = await response.json();
-
       if (data.error) {
         setError(data.error);
         return;
       }
-
       setCafes(data.results || data);
       setMessages(updatedMessages);
     } catch (error) {
@@ -92,7 +91,6 @@ export const CafeSearch = () => {
 
   const handleLoadMore = async () => {
     if (!messages.length) return;
-
     setIsLoading(true);
     setError(null);
 
@@ -105,22 +103,14 @@ export const CafeSearch = () => {
     try {
       const response = await fetch('/api/chat', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          messages: updatedMessages,
-          sessionId: sessionId,
-        }),
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: updatedMessages, sessionId }),
       });
-
       const data = await response.json();
-
       if (data.error) {
         setError(data.error);
         return;
       }
-
       setCafes((prevCafes) => [...prevCafes, ...(data.results || data)]);
       setMessages(updatedMessages);
     } catch (error) {
@@ -139,47 +129,51 @@ export const CafeSearch = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b to-slate-950 from-slate-900 text-white">
+    <div className="min-h-screen bg-white text-black">
       <div className="container mx-auto px-4 py-20">
         <h1 className="text-4xl sm:text-5xl font-bold text-center mb-4">
           Find Your Perfect Cafe
         </h1>
-        <p className="text-zinc-400 text-center text-md sm:text-xl lg:text-2xl">
+        <p className="text-gray-500 text-center text-md sm:text-xl lg:text-2xl">
           Discover, explore, and navigate to the best cafes near you.
         </p>
-        <p className="text-zinc-300 text-center text-xs sm:text-md mb-16">
+        <p className="text-red-500 text-center text-sm sm:text-md mb-16">
           (We currently provide cafes only in the Melbourne area.)
         </p>
 
         <div className="max-w-3xl mx-auto">
           <form onSubmit={handleSubmit} className="relative mb-12">
-            <div className="relative items-center flex gap-2 p-1 bg-zinc-800/70 rounded-lg backdrop-blur-sm">
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={clearResults}
-                className="text-zinc-400 hover:text-zinc-100"
-              >
-                <Trash2 className="h-5 w-5" color="white" />
-              </Button>
+            <div className="relative bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col border border-gray-200 hover:border-gray-400 overflow-hidden">
               <Textarea
                 value={input}
                 onChange={handleInputChange}
-                placeholder="I will recommend you the best cafe for you!"
+                placeholder="Let me recommend you cafes!"
                 ref={inputRef}
-                className="flex-1 bg-transparent border-0 focus-visible:ring-0 text-zinc-100 placeholder:text-zinc-500 resize-none"
-                rows={1}
+                className="w-full bg-transparent border-0 focus-visible:ring-0 text-gray-800 placeholder:text-gray-400 resize-none min-h-[96px]"
+                style={{ overflow: 'hidden' }} // Hide scrollbar
               />
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="bg-white hover:opacity-70 text-slate-900 font-bold"
-              >
-                Search
-              </Button>
+              <div className="flex justify-end gap-2 p-1 bg-white">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearResults}
+                  className="text-gray-600 hover:opacity-50"
+                >
+                  <Trash2 className="h-5 w-5" />
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="bg-gray-800 text-white hover:bg-gray-700 font-bold"
+                >
+                  Search
+                </Button>
+              </div>
             </div>
+            {isLoading && (
+              <p className="text-gray-500 text-center mt-4">Searching...</p>
+            )}
           </form>
 
           {hasSearched && (
@@ -191,17 +185,9 @@ export const CafeSearch = () => {
                 <CafeCard key={`${cafe.listId}-${cafe.name}`} cafe={cafe} />
               ))}
 
-              {isLoading && (
-                <Card className="col-span-full bg-zinc-800/50 border-zinc-700">
-                  <CardContent className="p-6 text-center text-zinc-400">
-                    Searching for cafes...
-                  </CardContent>
-                </Card>
-              )}
-
               {error && (
-                <Card className="col-span-full bg-red-900/20 border-red-800">
-                  <CardContent className="p-6 text-center text-red-400">
+                <Card className="col-span-full bg-red-100 border-red-200">
+                  <CardContent className="p-6 text-center text-red-600">
                     {error}
                   </CardContent>
                 </Card>
@@ -211,8 +197,7 @@ export const CafeSearch = () => {
                 <div className="col-span-full text-center">
                   <Button
                     onClick={handleLoadMore}
-                    variant="outline"
-                    className="mt-4"
+                    className="mt-4 border-gray-300 text-gray-700 hover:bg-gray-100"
                   >
                     Load More Cafes
                   </Button>
@@ -220,7 +205,7 @@ export const CafeSearch = () => {
               )}
 
               {!error && cafes.length === 0 && !isLoading && (
-                <div className="col-span-full text-center text-zinc-400">
+                <div className="col-span-full text-center text-gray-500">
                   No cafes found. Try another search.
                 </div>
               )}
@@ -234,11 +219,11 @@ export const CafeSearch = () => {
 
 const CafeCard = ({ cafe }: { cafe: Cafe }) => {
   return (
-    <Card className="bg-zinc-800/50 border-zinc-700 backdrop-blur-sm transition-all">
+    <Card className="bg-white border border-gray-200 shadow-sm transition-all hover:shadow-md">
       <CardContent className="p-6">
         <div className="flex items-center mb-4">
-          <Coffee className="h-6 w-6 text-zinc-400 mr-3" />
-          <h3 className="text-2xl font-bold text-zinc-100 line-clamp-1">
+          <Coffee className="h-6 w-6 text-gray-500 mr-3" />
+          <h3 className="text-2xl font-bold text-gray-800 line-clamp-1">
             {cafe.name}
           </h3>
         </div>
@@ -248,38 +233,41 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
             {cafe.keywords.map((keyword, index) => (
               <p
                 key={index}
-                className="bg-white text-zinc-700 px-5 py-1 rounded-full"
+                className="bg-gray-100 text-gray-700 px-3 py-1 rounded-full text-sm"
               >
                 {keyword}
               </p>
             ))}
           </div>
         </div>
-        <div className="flex items-center justify-between mt-auto pt-4 border-t border-zinc-700">
+        <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-200">
           <Link
             href={`https://www.google.com/maps/dir/?api=1&destination=${cafe.address}`}
             target="_blank"
             rel="noopener noreferrer"
           >
-            <Button variant="secondary" className="gap-2">
+            <Button
+              variant="secondary"
+              className="gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200"
+            >
               <MapPin className="h-4 w-4" />
               Directions
             </Button>
           </Link>
-          <div className="flex gap-2">
+          <div className="flex gap-2 items-center">
             {cafe.instagram && (
               <Link
                 href={cafe.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-pink-400 hover:text-pink-300 hover:bg-pink-400/20"
-                >
-                  <Instagram className="h-5 w-5" />
-                </Button>
+                <Image
+                  src={Instagram}
+                  alt="instagram"
+                  height={25}
+                  width={25}
+                  className="hover:scale-110"
+                />
               </Link>
             )}
             <Link
@@ -289,13 +277,13 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <Button
-                variant="ghost"
-                size="icon"
-                className="text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700"
-              >
-                <ExternalLink className="h-5 w-5" />
-              </Button>
+              <Image
+                src={Google}
+                alt="google"
+                height={20}
+                width={20}
+                className="hover:scale-110"
+              />
             </Link>
           </div>
         </div>

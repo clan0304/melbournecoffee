@@ -18,7 +18,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'Cafe Search AI',
+  title: 'Cafe Search AI for Melbourne',
   description:
     'Discover great cafes in Melbourne for delicious brunch, coffee, pastries.',
 };

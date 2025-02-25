@@ -68,11 +68,7 @@ body {
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background text-foreground;
-  }
+.clear-filters-item:hover {
+  background-color: #ef4444 !important; /* Red-500 with !important */
+  color: white !important;
 }

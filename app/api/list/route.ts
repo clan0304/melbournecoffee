@@ -4,7 +4,16 @@ import prisma from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 
 export const GET = async () => {
-  const cafeLists = await prisma.cafe.findMany();
+  const cafeLists = await prisma.cafe.findMany({
+    select: {
+      name: true,
+      address: true,
+      instagram: true,
+      mycomment: true,
+      listId: true,
+      keywords: true,
+    },
+  });
 
   return NextResponse.json(cafeLists, { status: 200 });
 };
