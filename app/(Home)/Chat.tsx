@@ -80,38 +80,10 @@ export const CafeSearch = () => {
         setError(data.error);
         return;
       }
-      setCafes(data.results || data);
-      setMessages(updatedMessages);
-    } catch (error) {
-      setError(`${error} Something went wrong. Please try again.`);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
-  const handleLoadMore = async () => {
-    if (!messages.length) return;
-    setIsLoading(true);
-    setError(null);
-
-    const loadMoreMessage = {
-      role: 'user' as const,
-      content: 'Can you show me more options?',
-    };
-    const updatedMessages = [...messages, loadMoreMessage];
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: updatedMessages, sessionId }),
-      });
-      const data = await response.json();
-      if (data.error) {
-        setError(data.error);
-        return;
-      }
-      setCafes((prevCafes) => [...prevCafes, ...(data.results || data)]);
+      // Ensure we only show maximum 6 cafes
+      const cafeResults = data.results || data;
+      setCafes(cafeResults.slice(0, 6));
       setMessages(updatedMessages);
     } catch (error) {
       setError(`${error} Something went wrong. Please try again.`);
@@ -191,17 +163,6 @@ export const CafeSearch = () => {
                     {error}
                   </CardContent>
                 </Card>
-              )}
-
-              {!error && cafes.length > 0 && !isLoading && (
-                <div className="col-span-full text-center">
-                  <Button
-                    onClick={handleLoadMore}
-                    className="mt-4 border-gray-300 text-gray-700 hover:bg-gray-100"
-                  >
-                    Load More Cafes
-                  </Button>
-                </div>
               )}
 
               {!error && cafes.length === 0 && !isLoading && (

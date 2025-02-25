@@ -87,35 +87,44 @@ export async function POST(req: Request) {
       offset = 0;
     }
 
-    const match = searchQuery?.match(/\b(\d+)\b/);
-    let numberOfResults = match ? parseInt(match[1], 10) : 6;
-    numberOfResults = Math.min(numberOfResults, 10);
+    // Force number of results to be 6 regardless of user input
+    const numberOfResults = 6;
 
     // Get more results initially to allow for reranking
     const vectorQueryResponse = await notesIndex.query({
       vector: embedding,
-      topK: offset + numberOfResults * 2, // Get more results for better reranking
+      topK: offset + numberOfResults * 3, // Get more results for better chance of finding unique ones
     });
 
     const paginatedMatches = vectorQueryResponse.matches.slice(
       offset,
-      offset + numberOfResults * 2
+      offset + numberOfResults * 3
     );
+
+    // Track unique cafe IDs to prevent duplicates
+    const uniqueCafeIds = new Set<string>();
+
+    // Filter for unique cafe IDs
+    const uniqueMatches = paginatedMatches.filter((match) => {
+      if (uniqueCafeIds.has(match.id)) {
+        return false;
+      }
+      uniqueCafeIds.add(match.id);
+      return true;
+    });
 
     // Fetch matching cafes from database
     const relevantCafes = await prisma.cafe.findMany({
       where: {
         id: {
-          in: paginatedMatches.map((match) => match.id),
+          in: uniqueMatches.map((match) => match.id),
         },
       },
     });
 
     // Calculate combined scores with name similarity
     const cafeResults = relevantCafes.map((cafe) => {
-      const vectorMatch = paginatedMatches.find(
-        (match) => match.id === cafe.id
-      );
+      const vectorMatch = uniqueMatches.find((match) => match.id === cafe.id);
       const vectorScore = vectorMatch?.score || 0;
 
       // Calculate name similarity score
@@ -124,8 +133,8 @@ export async function POST(req: Request) {
         searchQuery!
       );
 
-      // Combined score: 70% name similarity, 30% vector similarity
-      const combinedScore = nameSimilarityScore * 0.7 + vectorScore * 0.3;
+      // Combined score: 30% name similarity, 70% vector similarity
+      const combinedScore = nameSimilarityScore * 0.05 + vectorScore * 0.95;
 
       return {
         listId: cafe.listId,
@@ -158,8 +167,8 @@ export async function POST(req: Request) {
     // Sort by combined score
     cafeResults.sort((a, b) => b.relevanceScore - a.relevanceScore);
 
-    // Take only the requested number of results after reranking
-    const finalResults = cafeResults.slice(0, numberOfResults);
+    // Always limit to exactly 6 results maximum
+    const finalResults = cafeResults.slice(0, Math.min(6, cafeResults.length));
 
     return NextResponse.json(
       {
