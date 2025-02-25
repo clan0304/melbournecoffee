@@ -9,7 +9,6 @@ export const GET = async () => {
       name: true,
       address: true,
       instagram: true,
-      mycomment: true,
       listId: true,
       keywords: true,
     },
