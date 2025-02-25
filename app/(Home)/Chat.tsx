@@ -149,10 +149,10 @@ export const CafeSearch = () => {
                 onChange={handleInputChange}
                 placeholder="Let me recommend you cafes!"
                 ref={inputRef}
-                className="w-full bg-transparent border-0 focus-visible:ring-0 text-gray-800 placeholder:text-gray-400 resize-none min-h-[96px]"
+                className="w-full bg-transparent border-0 focus-visible:ring-0 text-gray-800 placeholder:text-gray-400 resize-none min-h-[48px]"
                 style={{ overflow: 'hidden' }} // Hide scrollbar
               />
-              <div className="flex justify-end gap-2 p-1 bg-white">
+              <div className="flex justify-end gap-2 py-2 pr-2 bg-white">
                 <Button
                   type="button"
                   variant="ghost"
