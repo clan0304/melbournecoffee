@@ -130,7 +130,7 @@ export async function POST(req: Request) {
         cafe.name || '',
         searchQuery
       ); // Default to empty string if null
-      const combinedScore = nameSimilarityScore * 0.05 + vectorScore * 0.95;
+      const combinedScore = nameSimilarityScore * 0.01 + vectorScore * 0.99;
 
       return {
         listId: cafe.listId,
