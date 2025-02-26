@@ -35,7 +35,7 @@ const Navbar = () => {
         </Link>
         <SignedOut>
           <SignInButton mode="modal">
-            <button className="bg-white text-[#01182F] font-semibold rounded-lg px-6 py-1 hover:bg-opacity-90 transition-all">
+            <button className="bg-[#01182F] text-white font-semibold rounded-lg px-6 py-1 hover:bg-opacity-90 transition-all">
               Sign In
             </button>
           </SignInButton>
