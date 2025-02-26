@@ -159,7 +159,7 @@ const ListPage = () => {
         </div>
 
         {/* Cafe Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3 gap-6">
           {filteredCafes.map((cafe) => (
             <Card
               key={`${cafe.listId}-${cafe.name}`}

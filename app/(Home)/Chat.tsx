@@ -187,7 +187,7 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
           </h3>
         </div>
 
-        <div className="mb-6 min-h-[100px]">
+        <div className="mb-6 min-h-[60px]">
           <div className="flex flex-wrap gap-2">
             {cafe.keywords.map((keyword, index) => (
               <p
@@ -198,6 +198,11 @@ const CafeCard = ({ cafe }: { cafe: Cafe }) => {
               </p>
             ))}
           </div>
+        </div>
+        <div className="min-h-[20px]">
+          <p className="text-[12px] md:text-[16px] lg:text-lg pb-2 text-black italic">
+            {cafe.address}
+          </p>
         </div>
         <div className="flex items-center justify-between mt-auto pt-4 border-t border-gray-200">
           <Link

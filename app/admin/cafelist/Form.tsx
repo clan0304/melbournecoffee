@@ -138,7 +138,7 @@ const Form = ({ onClose, cafeListItem }: FormProps) => {
       <div className="flex flex-col">
         <label className="mb-2 text-gray-700 font-semibold">Description</label>
         <input
-          {...register('description', { required: true, maxLength: 200 })}
+          {...register('description', { required: true, maxLength: 500 })}
           className="border-2 border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500"
           placeholder="Cafe description"
         />
@@ -152,7 +152,7 @@ const Form = ({ onClose, cafeListItem }: FormProps) => {
       <div className="flex flex-col">
         <label className="mb-2 text-gray-700 font-semibold">My Comment</label>
         <textarea
-          {...register('mycomment', { required: true, maxLength: 200 })}
+          {...register('mycomment', { required: true, maxLength: 500 })}
           className="border-2 border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:border-blue-500"
           placeholder="Your comment... (max 200 characters)"
         />
