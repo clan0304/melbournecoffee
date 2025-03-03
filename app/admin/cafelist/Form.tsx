@@ -144,7 +144,7 @@ const Form = ({ onClose, cafeListItem }: FormProps) => {
         />
         {errors.description && (
           <span className="text-red-500 text-sm mt-1">
-            Description must be 200 characters or less
+            Description must be 500 characters or less
           </span>
         )}
       </div>
@@ -158,7 +158,7 @@ const Form = ({ onClose, cafeListItem }: FormProps) => {
         />
         {errors.mycomment && (
           <span className="text-red-500 text-sm mt-1">
-            Comment must be 200 characters or less
+            Comment must be 500 characters or less
           </span>
         )}
       </div>
